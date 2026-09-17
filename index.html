@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1C1B18;
+    --ink-soft: #55524A;
+    --paper: #EAE6DC;
+    --paper-raised: #F4F1E8;
+    --line: #CFC9B8;
+    --urgent: #B23A2F;
+    --urgent-bg: #F3DAD5;
+    --soon: #8A6300;
+    --soon-bg: #F1E4BE;
+    --calm: #2E6F5E;
+    --calm-bg: #DCE9E2;
+    --done: #8C8A80;
+    --accent: #1C1B18;
+    --shadow: rgba(28, 27, 24, 0.08);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #EDE9DD;
+      --ink-soft: #B6B0A0;
+      --paper: #17150F;
+      --paper-raised: #1F1C15;
+      --line: #3A362A;
+      --urgent: #E36A5C;
+      --urgent-bg: #3A211C;
+      --soon: #D9AE3F;
+      --soon-bg: #372C13;
+      --calm: #6FBBA3;
+      --calm-bg: #1C332B;
+      --done: #6E6B60;
+      --accent: #EDE9DD;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #EDE9DD;
+    --ink-soft: #B6B0A0;
+    --paper: #17150F;
+    --paper-raised: #1F1C15;
+    --line: #3A362A;
+    --urgent: #E36A5C;
+    --urgent-bg: #3A211C;
+    --soon: #D9AE3F;
+    --soon-bg: #372C13;
+    --calm: #6FBBA3;
+    --calm-bg: #1C332B;
+    --done: #6E6B60;
+    --accent: #EDE9DD;
+    --shadow: rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono {
+    font-family: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 24px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; }
+  }
+
+  .hero-day {
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    font-weight: 600;
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+  }
+  .hero-date {
+    margin: 0 0 18px;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+  }
+
+  .next-class {
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 16px 18px;
+    background: var(--paper-raised);
+  }
+  .next-class .label {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .next-class .course {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  .next-class .meta {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    margin-top: 4px;
+  }
+  .next-class .countdown {
+    font-size: 1.6rem;
+    margin-top: 10px;
+  }
+
+  .urgent-panel h2 {
+    font-size: 1rem;
+    margin: 0 0 10px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .urgent-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .urgent-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 3px;
+    border-left: 3px solid transparent;
+    font-size: 0.94rem;
+  }
+  .urgent-item .who { font-weight: 600; }
+  .urgent-item .when { white-space: nowrap; font-size: 0.85rem; display: flex; align-items: baseline; gap: 8px; }
+  .u-today { background: var(--urgent-bg); border-left-color: var(--urgent); color: var(--urgent); }
+  .u-soon  { background: var(--soon-bg); border-left-color: var(--soon); color: var(--soon); }
+  .u-later { background: var(--calm-bg); border-left-color: var(--calm); color: var(--calm); }
+  .u-empty { color: var(--ink-soft); font-size: 0.92rem; padding: 10px 2px; }
+  .u-dismiss {
+    background: none;
+    border: none;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0 2px;
+    font-family: inherit;
+  }
+  .u-dismiss:hover { opacity: 1; }
+
+  /* ---------- Tabs ---------- */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 24px;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    padding: 10px 4px;
+    margin-right: 22px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--ink); border-bottom-color: var(--ink); }
+  .tab-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--calm);
+    outline-offset: 2px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ---------- Week schedule ---------- */
+  .week-grid { display: flex; flex-direction: column; gap: 18px; }
+  .day-block h3 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .day-block h3 .count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+  }
+  .class-row {
+    display: flex;
+    gap: 14px;
+    padding: 8px 0;
+    border-top: 1px solid var(--line);
+    font-size: 0.94rem;
+  }
+  .class-row .time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    min-width: 132px;
+    flex-shrink: 0;
+  }
+  .class-row .room { color: var(--ink-soft); font-size: 0.88rem; }
+  .no-class { color: var(--ink-soft); font-size: 0.9rem; padding: 8px 0; border-top: 1px solid var(--line); }
+  .today-marker { color: var(--calm); font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; margin-left: 4px; }
+
+  /* ---------- Assignments ---------- */
+  .add-form {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr 0.9fr auto;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  @media (max-width: 640px) {
+    .add-form { grid-template-columns: 1fr; }
+  }
+  input, select {
+    font-family: inherit;
+    font-size: 0.92rem;
+    padding: 9px 10px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--ink);
+  }
+  button.primary {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 3px;
+    padding: 9px 16px;
+    cursor: pointer;
+  }
+  button.primary:hover { opacity: 0.88; }
+
+  .assign-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 4px;
+    border-top: 1px solid var(--line);
+  }
+  .assign-row.done { opacity: 0.5; }
+  .assign-row .cb { flex-shrink: 0; width: 18px; height: 18px; cursor: pointer; accent-color: var(--calm); }
+  .assign-row .info { flex: 1; min-width: 0; }
+  .assign-row .course-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    display: block;
+  }
+  .assign-row .task { font-size: 1rem; }
+  .assign-row.done .task { text-decoration: line-through; }
+  .assign-row .due-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.76rem;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .assign-row .del {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 2px 6px;
+    line-height: 1;
+  }
+  .assign-row .del:hover { color: var(--urgent); }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    margin: 22px 0 4px;
+  }
+
+  /* ---------- Grades ---------- */
+  .grade-course-select { margin-bottom: 18px; max-width: 260px; }
+  table.grade-table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+  table.grade-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    text-align: left;
+    color: var(--ink-soft);
+    font-weight: 500;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.grade-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  table.grade-table input { width: 100%; padding: 6px 8px; }
+  table.grade-table .num-col { width: 110px; }
+  .grade-table-wrap { overflow-x: auto; }
+  .grade-summary {
+    display: flex;
+    gap: 28px;
+    margin: 18px 0 10px;
+    flex-wrap: wrap;
+  }
+  .grade-summary .metric .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.7rem;
+    display: block;
+  }
+  .grade-summary .metric .lbl { font-size: 0.82rem; color: var(--ink-soft); }
+  .grade-actions { display: flex; gap: 10px; margin-top: 14px; }
+  button.ghost {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 3px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  button.ghost:hover { border-color: var(--ink-soft); }
+
+  footer {
+    margin-top: 60px;
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    font-family: 'IBM Plex Mono', monospace;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <p class="hero-day" id="heroDay">—</p>
+      <p class="hero-date mono" id="heroDate">—</p>
+      <div class="next-class" id="nextClassCard"></div>
+    </div>
+    <div class="urgent-panel">
+      <h2>Coming up</h2>
+      <div class="urgent-list" id="urgentList"></div>
+    </div>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="today">TODAY</button>
+    <button class="tab-btn" data-tab="week">WEEK</button>
+    <button class="tab-btn" data-tab="assignments">ASSIGNMENTS</button>
+    <button class="tab-btn" data-tab="grades">GRADES</button>
+  </nav>
+
+  <!-- TODAY -->
+  <section class="panel active" id="panel-today">
+    <p class="section-label">TODAY'S CLASSES</p>
+    <div id="todayClasses"></div>
+    <p class="section-label">DUE TODAY &amp; THIS WEEK</p>
+    <div id="todayAssignments"></div>
+  </section>
+
+  <!-- WEEK -->
+  <section class="panel" id="panel-week">
+    <div class="week-grid" id="weekGrid"></div>
+  </section>
+
+  <!-- ASSIGNMENTS -->
+  <section class="panel" id="panel-assignments">
+    <form class="add-form" id="addForm">
+      <input type="text" id="inCourse" placeholder="Course (e.g. CSCI 467)" required list="courseList">
+      <datalist id="courseList"></datalist>
+      <input type="text" id="inTask" placeholder="Task (e.g. Assignment 4)" required>
+      <input type="date" id="inDate" required>
+      <button type="submit" class="primary">ADD TASK</button>
+    </form>
+    <div id="assignList"></div>
+  </section>
+
+  <!-- GRADES -->
+  <section class="panel" id="panel-grades">
+    <select id="gradeCourseSelect" class="grade-course-select"></select>
+    <div class="grade-table-wrap">
+      <table class="grade-table">
+        <thead>
+          <tr><th>Assignment</th><th class="num-col">Weight (%)</th><th class="num-col">Score (%)</th><th></th></tr>
+        </thead>
+        <tbody id="gradeRows"></tbody>
+      </table>
+    </div>
+    <div class="grade-actions">
+      <button class="ghost" id="addGradeRow">+ ADD ROW</button>
+    </div>
+    <div class="grade-summary">
+      <div class="metric"><span class="num" id="totalWeight">0%</span><span class="lbl">Weight accounted for</span></div>
+      <div class="metric"><span class="num" id="currentGrade">0%</span><span class="lbl">Current grade</span></div>
+    </div>
+  </section>
+
+  <footer>data stays in this browser — each device or friend viewing has their own copy</footer>
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  // ---------- Storage helpers ----------
+  function loadJSON(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) { return fallback; }
+  }
+  function saveJSON(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage unavailable */ }
+  }
+
+  // ---------- Seed data ----------
+  const SCHEDULE = [
+    { day: 1, start: "09:30", end: "10:30", course: "CSCI 467", room: "MULH3026" },
+    { day: 1, start: "14:30", end: "15:45", course: "CSCI 491", room: "MULH2070" },
+    { day: 2, start: "11:30", end: "12:45", course: "CSCI 485", room: "AX113" },
+    { day: 2, start: "16:00", end: "17:15", course: "CSCI 368", room: "MULH4022" },
+    { day: 2, start: "18:00", end: "21:00", course: "ART 101", room: "IM002" },
+    { day: 3, start: "08:30", end: "09:30", course: "CSCI 467", room: "MULH3026" },
+    { day: 3, start: "10:30", end: "12:30", course: "CSCI 368 Lab", room: "MULH4024" },
+    { day: 3, start: "13:00", end: "14:15", course: "DSCI 204", room: "AX124" },
+    { day: 4, start: "10:30", end: "11:30", course: "CSCI 467", room: "MULH3026" },
+    { day: 4, start: "14:30", end: "15:45", course: "CSCI 368", room: "MULH4022" },
+    { day: 5, start: "11:30", end: "12:45", course: "DSCI 204", room: "AX124" },
+    { day: 5, start: "13:00", end: "14:15", course: "CSCI 485", room: "AX113" }
+  ];
+  const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+  const SEED_ASSIGNMENTS = [
+    ["CSCI 467","Quiz 1","2026-09-14"],
+    ["CSCI 368","Quiz 1","2026-09-15"],
+    ["CSCI 467","Assignment 1","2026-09-19"],
+    ["CSCI 368","Assignment 1","2026-09-19"],
+    ["CSCI 467","Quiz 2","2026-09-28"],
+    ["CSCI 368","Quiz 2","2026-09-29"],
+    ["CSCI 368","Midterm Exam 1","2026-10-01"],
+    ["CSCI 467","Assignment 2","2026-10-03"],
+    ["CSCI 368","Assignment 2","2026-10-03"],
+    ["CSCI 467","Midterm Exam 1","2026-10-05"],
+    ["CSCI 467","Quiz 3","2026-10-26"],
+    ["CSCI 368","Quiz 3","2026-10-27"],
+    ["CSCI 467","Assignment 3","2026-10-31"],
+    ["CSCI 368","Assignment 3","2026-10-31"],
+    ["CSCI 467","Quiz 4","2026-11-09"],
+    ["CSCI 368","Quiz 4","2026-11-10"],
+    ["CSCI 467","Midterm Exam 2","2026-11-16"],
+    ["CSCI 368","Midterm Exam 2","2026-11-17"],
+    ["CSCI 467","Project Submission","2026-11-20"],
+    ["CSCI 368","Project Submission","2026-11-20"]
+  ].map((r, i) => ({ id: "seed-" + i, course: r[0], task: r[1], due: r[2], done: false }));
+
+  const COURSES = ["CSCI 467","CSCI 368","CSCI 485","CSCI 491","DSCI 204","ART 101"];
+
+  // Added after cross-checking the DSCI 204 syllabus, which had no entries yet
+  const DSCI_SEED = [
+    ["Assignment 1","2026-09-18"],
+    ["Assignment 2","2026-09-25"],
+    ["Assignment 3","2026-10-02"],
+    ["Assignment 4","2026-10-09"],
+    ["Assignment 5","2026-10-23"],
+    ["Assignment 6","2026-10-30"],
+    ["Assignment 7","2026-11-06"],
+    ["Assignment 8","2026-11-13"],
+    ["Assignment 9","2026-11-20"],
+    ["Assignment 10","2026-11-27"],
+    ["Term Test 1","2026-10-02"],
+    ["Term Test 2","2026-11-13"],
+    ["Project Presentation","2026-12-04"],
+    ["Project Report","2026-12-07"]
+  ].map((r, i) => ({ id: "dsci-" + i, course: "DSCI 204", task: r[0], due: r[1], done: false }));
+
+  // ---------- State ----------
+  let assignments = loadJSON("hub_assignments", null);
+  if (!assignments) {
+    assignments = SEED_ASSIGNMENTS.concat(DSCI_SEED);
+    saveJSON("hub_assignments", assignments);
+  } else {
+    // one-time merge in case this browser's saved data predates the DSCI 204 fix
+    const existingIds = new Set(assignments.map(a => a.id));
+    let changed = false;
+    DSCI_SEED.forEach(item => {
+      if (!existingIds.has(item.id)) { assignments.push(item); changed = true; }
+    });
+    if (changed) saveJSON("hub_assignments", assignments);
+  }
+
+  let gradeData = loadJSON("hub_grades", null);
+  if (!gradeData) {
+    gradeData = {};
+    saveJSON("hub_grades", gradeData);
+  }
+  COURSES.forEach(c => { if (!gradeData[c]) gradeData[c] = []; });
+
+  function persist() {
+    saveJSON("hub_assignments", assignments);
+    saveJSON("hub_grades", gradeData);
+  }
+
+  // ---------- Date helpers ----------
+  const now = new Date();
+  function daysBetween(dateStr) {
+    const d = new Date(dateStr + "T00:00:00");
+    const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((d - today0) / 86400000);
+  }
+  function formatDue(dateStr) {
+    const d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+  function urgencyClass(days) {
+    if (days <= 0) return "u-today";
+    if (days <= 3) return "u-soon";
+    return "u-later";
+  }
+  function urgencyLabel(days) {
+    if (days < 0) return "OVERDUE";
+    if (days === 0) return "TODAY";
+    if (days === 1) return "1 DAY";
+    return days + " DAYS";
+  }
+
+  // ---------- Hero: today + next class ----------
+  function renderHero() {
+    document.getElementById("heroDay").textContent = DAY_NAMES[now.getDay()];
+    document.getElementById("heroDate").textContent = now.toLocaleDateString(undefined, { weekday: undefined, year: "numeric", month: "long", day: "numeric" }) + " · " + now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+
+    const todays = SCHEDULE.filter(c => c.day === now.getDay()).sort((a,b) => a.start.localeCompare(b.start));
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const toMins = t => { const [h,m] = t.split(":").map(Number); return h*60+m; };
+
+    let next = null;
+    for (const c of todays) {
+      if (toMins(c.end) > nowMins) { next = c; break; }
+    }
+
+    const card = document.getElementById("nextClassCard");
+    if (next) {
+      const inProgress = toMins(next.start) <= nowMins && nowMins < toMins(next.end);
+      const diff = toMins(next.start) - nowMins;
+      card.innerHTML = `
+        <div class="label">${inProgress ? "IN PROGRESS" : "NEXT CLASS"}</div>
+        <div class="course">${next.course}</div>
+        <div class="meta mono">${next.start}–${next.end} · ${next.room}</div>
+        <div class="countdown mono">${inProgress ? "ends " + next.end : (diff <= 0 ? "starting now" : "in " + Math.floor(diff/60) + "h " + (diff%60) + "m")}</div>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="label">NEXT CLASS</div>
+        <div class="course">No more classes today</div>
+        <div class="meta mono">enjoy the rest of your day</div>
+      `;
+    }
+  }
+
+  // ---------- Urgent list (hero) + today's assignments panel ----------
+  function pendingSorted() {
+    return assignments.filter(a => !a.done).sort((a,b) => a.due.localeCompare(b.due));
+  }
+
+  function renderUrgentList() {
+    const el = document.getElementById("urgentList");
+    const upcoming = pendingSorted().filter(a => daysBetween(a.due) <= 7).slice(0, 6);
+    if (upcoming.length === 0) {
+      el.innerHTML = `<div class="u-empty">Nothing due in the next 7 days.</div>`;
+      return;
+    }
+    el.innerHTML = upcoming.map(a => {
+      const d = daysBetween(a.due);
+      return `<div class="urgent-item ${urgencyClass(d)}">
+        <span class="who">${a.course} — ${a.task}</span>
+        <span class="when mono">${urgencyLabel(d)}<button class="u-dismiss" data-action="dismiss" data-id="${a.id}" aria-label="Dismiss">×</button></span>
+      </div>`;
+    }).join("");
+  }
+
+  function renderTodayPanel() {
+    const classesEl = document.getElementById("todayClasses");
+    const todays = SCHEDULE.filter(c => c.day === now.getDay()).sort((a,b) => a.start.localeCompare(b.start));
+    if (todays.length === 0) {
+      classesEl.innerHTML = `<div class="no-class">No classes today.</div>`;
+    } else {
+      classesEl.innerHTML = todays.map(c => `
+        <div class="class-row">
+          <span class="time mono">${c.start}–${c.end}</span>
+          <span class="course">${c.course}</span>
+          <span class="room">${c.room}</span>
+        </div>`).join("");
+    }
+
+    const assignEl = document.getElementById("todayAssignments");
+    const dueThisWeek = pendingSorted().filter(a => daysBetween(a.due) <= 7);
+    if (dueThisWeek.length === 0) {
+      assignEl.innerHTML = `<div class="u-empty">Nothing due in the next 7 days. You're caught up.</div>`;
+    } else {
+      assignEl.innerHTML = dueThisWeek.map(a => {
+        const d = daysBetween(a.due);
+        return `<div class="urgent-item ${urgencyClass(d)}">
+          <span class="who">${a.course} — ${a.task}</span>
+          <span class="when mono">${urgencyLabel(d)} · ${formatDue(a.due)}<button class="u-dismiss" data-action="dismiss" data-id="${a.id}" aria-label="Dismiss">×</button></span>
+        </div>`;
+      }).join("");
+    }
+  }
+
+  // ---------- Week panel ----------
+  function renderWeek() {
+    const el = document.getElementById("weekGrid");
+    const order = [1,2,3,4,5,6,0];
+    el.innerHTML = order.map(day => {
+      const rows = SCHEDULE.filter(c => c.day === day).sort((a,b) => a.start.localeCompare(b.start));
+      const isToday = day === now.getDay();
+      const body = rows.length
+        ? rows.map(c => `<div class="class-row"><span class="time mono">${c.start}–${c.end}</span><span class="course">${c.course}</span><span class="room">${c.room}</span></div>`).join("")
+        : `<div class="no-class">No classes.</div>`;
+      return `<div class="day-block">
+        <h3>${DAY_NAMES[day]} ${isToday ? '<span class="today-marker">TODAY</span>' : ''} <span class="count">${rows.length} class${rows.length===1?"":"es"}</span></h3>
+        ${body}
+      </div>`;
+    }).join("");
+  }
+
+  // ---------- Assignments panel ----------
+  function renderCourseList() {
+    const set = new Set(COURSES.concat(assignments.map(a => a.course)));
+    document.getElementById("courseList").innerHTML = Array.from(set).map(c => `<option value="${c}">`).join("");
+  }
+
+  function renderAssignments() {
+    const el = document.getElementById("assignList");
+    const sorted = [...assignments].sort((a,b) => {
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      return a.due.localeCompare(b.due);
+    });
+    if (sorted.length === 0) {
+      el.innerHTML = `<div class="u-empty">No assignments yet. Add one above.</div>`;
+      return;
+    }
+    el.innerHTML = sorted.map(a => {
+      const d = daysBetween(a.due);
+      const pillClass = a.done ? "" : urgencyClass(d);
+      const pillStyle = a.done ? `style="background:transparent;color:var(--done)"` : "";
+      return `<div class="assign-row ${a.done ? 'done' : ''}" data-id="${a.id}">
+        <input type="checkbox" class="cb" ${a.done ? "checked" : ""} data-action="toggle" data-id="${a.id}">
+        <div class="info">
+          <span class="course-tag">${a.course}</span>
+          <span class="task">${a.task}</span>
+        </div>
+        <span class="due-pill ${pillClass}" ${pillStyle}>${a.done ? "done" : formatDue(a.due)}</span>
+        <button class="del" data-action="delete" data-id="${a.id}" aria-label="Delete">×</button>
+      </div>`;
+    }).join("");
+  }
+
+  document.getElementById("addForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const course = document.getElementById("inCourse").value.trim();
+    const task = document.getElementById("inTask").value.trim();
+    const due = document.getElementById("inDate").value;
+    if (!course || !task || !due) return;
+    assignments.push({ id: "a-" + Date.now(), course, task, due, done: false });
+    persist();
+    document.getElementById("inCourse").value = "";
+    document.getElementById("inTask").value = "";
+    document.getElementById("inDate").value = "";
+    renderAll();
+  });
+
+  function dismissAssignment(id) {
+    assignments = assignments.filter(a => a.id !== id);
+    persist();
+    renderAll();
+  }
+
+  document.getElementById("urgentList").addEventListener("click", e => {
+    const btn = e.target.closest("[data-action='dismiss']");
+    if (btn) dismissAssignment(btn.dataset.id);
+  });
+
+  document.getElementById("todayAssignments").addEventListener("click", e => {
+    const btn = e.target.closest("[data-action='dismiss']");
+    if (btn) dismissAssignment(btn.dataset.id);
+  });
+
+  document.getElementById("assignList").addEventListener("click", e => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (btn.dataset.action === "delete") {
+      assignments = assignments.filter(a => a.id !== id);
+      persist();
+      renderAll();
+    } else if (btn.dataset.action === "toggle") {
+      const a = assignments.find(a => a.id === id);
+      if (a) { a.done = !a.done; persist(); renderAll(); }
+    }
+  });
+
+  // ---------- Grades panel ----------
+  const courseSelect = document.getElementById("gradeCourseSelect");
+  courseSelect.innerHTML = COURSES.map(c => `<option value="${c}">${c}</option>`).join("");
+  let currentCourse = COURSES[0];
+
+  function renderGrades() {
+    const rows = gradeData[currentCourse] || [];
+    const tbody = document.getElementById("gradeRows");
+    tbody.innerHTML = rows.map((r, i) => `
+      <tr data-i="${i}">
+        <td><input type="text" class="g-name" value="${r.name.replace(/"/g,'&quot;')}"></td>
+        <td class="num-col"><input type="number" class="g-weight" value="${r.weight}" min="0" step="0.5"></td>
+        <td class="num-col"><input type="number" class="g-score" value="${r.score}" min="0" step="0.5"></td>
+        <td><button class="del g-del" aria-label="Remove row">×</button></td>
+      </tr>`).join("");
+    updateGradeSummary();
+  }
+
+  function updateGradeSummary() {
+    const rows = gradeData[currentCourse] || [];
+    const totalWeight = rows.reduce((s, r) => s + (Number(r.weight) || 0), 0);
+    const earned = rows.reduce((s, r) => s + ((Number(r.weight) || 0) / 100) * (Number(r.score) || 0), 0);
+    document.getElementById("totalWeight").textContent = totalWeight.toFixed(1).replace(/\.0$/,"") + "%";
+    document.getElementById("currentGrade").textContent = earned.toFixed(2) + "%";
+  }
+
+  courseSelect.addEventListener("change", () => {
+    currentCourse = courseSelect.value;
+    renderGrades();
+  });
+
+  document.getElementById("addGradeRow").addEventListener("click", () => {
+    if (!gradeData[currentCourse]) gradeData[currentCourse] = [];
+    gradeData[currentCourse].push({ name: "New item", weight: 0, score: 0 });
+    persist();
+    renderGrades();
+  });
+
+  document.getElementById("gradeRows").addEventListener("input", e => {
+    const tr = e.target.closest("tr");
+    if (!tr) return;
+    const i = Number(tr.dataset.i);
+    const row = gradeData[currentCourse][i];
+    if (!row) return;
+    if (e.target.classList.contains("g-name")) row.name = e.target.value;
+    if (e.target.classList.contains("g-weight")) row.weight = e.target.value;
+    if (e.target.classList.contains("g-score")) row.score = e.target.value;
+    persist();
+    updateGradeSummary();
+  });
+
+  document.getElementById("gradeRows").addEventListener("click", e => {
+    if (!e.target.classList.contains("g-del")) return;
+    const tr = e.target.closest("tr");
+    const i = Number(tr.dataset.i);
+    gradeData[currentCourse].splice(i, 1);
+    persist();
+    renderGrades();
+  });
+
+  // ---------- Tabs ----------
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+    });
+  });
+
+  // ---------- Render all ----------
+  function renderAll() {
+    renderHero();
+    renderUrgentList();
+    renderTodayPanel();
+    renderWeek();
+    renderCourseList();
+    renderAssignments();
+  }
+
+  renderAll();
+  renderGrades();
+  setInterval(renderHero, 60000);
+})();
+</script>
+</body>
+</html>
