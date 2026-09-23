@@ -526,7 +526,9 @@
   }
 
   // ---------- Date helpers ----------
-  const now = new Date();
+  // `now` is refreshed by tick() every minute so the clock, countdown,
+  // and "days left" labels stay current while the page is open.
+  let now = new Date();
   function daysBetween(dateStr) {
     const d = new Date(dateStr + "T00:00:00");
     const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -597,7 +599,7 @@
       const d = daysBetween(a.due);
       return `<div class="urgent-item ${urgencyClass(d)}">
         <span class="who">${a.course} — ${a.task}</span>
-        <span class="when mono">${urgencyLabel(d)}<button class="u-dismiss" data-action="dismiss" data-id="${a.id}" aria-label="Dismiss">×</button></span>
+        <span class="when mono">${urgencyLabel(d)}<button class="u-dismiss" data-action="dismiss" data-id="${a.id}" aria-label="Mark done" title="Mark done">×</button></span>
       </div>`;
     }).join("");
   }
@@ -625,7 +627,7 @@
         const d = daysBetween(a.due);
         return `<div class="urgent-item ${urgencyClass(d)}">
           <span class="who">${a.course} — ${a.task}</span>
-          <span class="when mono">${urgencyLabel(d)} · ${formatDue(a.due)}<button class="u-dismiss" data-action="dismiss" data-id="${a.id}" aria-label="Dismiss">×</button></span>
+          <span class="when mono">${urgencyLabel(d)} · ${formatDue(a.due)}<button class="u-dismiss" data-action="dismiss" data-id="${a.id}" aria-label="Mark done" title="Mark done">×</button></span>
         </div>`;
       }).join("");
     }
@@ -694,8 +696,12 @@
     renderAll();
   });
 
+  // Dismissing from "Coming up" / "Due this week" marks the task done
+  // (it stays in the Assignments tab, where it can be unchecked).
   function dismissAssignment(id) {
-    assignments = assignments.filter(a => a.id !== id);
+    const a = assignments.find(a => a.id === id);
+    if (!a) return;
+    a.done = true;
     persist();
     renderAll();
   }
@@ -804,9 +810,28 @@
     renderAssignments();
   }
 
+  // ---------- Live clock ----------
+  // Refresh the time every minute. If the date has rolled over (e.g. past
+  // midnight), re-render everything so "days left" and today's classes update.
+  function tick() {
+    const prevDay = now.toDateString();
+    now = new Date();
+    if (now.toDateString() !== prevDay) renderAll();
+    else renderHero();
+  }
+
   renderAll();
   renderGrades();
-  setInterval(renderHero, 60000);
+
+  // Line the updates up with the start of each minute so the clock is exact.
+  const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+  setTimeout(() => { tick(); setInterval(tick, 60000); }, msToNextMinute);
+
+  // Catch up immediately when returning to the tab or waking the laptop,
+  // since browsers pause timers in the background.
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) tick();
+  });
 })();
 </script>
 </body>
